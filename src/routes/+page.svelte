@@ -1,15 +1,21 @@
 <script lang="ts">
+	import Button from '$lib/components/Button.svelte';
 	import Notification from '$lib/components/Notification.svelte';
 	import generateNotifications from '$lib/utils/generate-notifications';
 
-	let notifications = $state(generateNotifications(5));
+	let notifications = $state.raw(generateNotifications(5));
 </script>
 
+<Button onclick={() => {
+	notifications = generateNotifications(5);
+}}>
+	Refresh
+</Button>
 <ul>
 	{#each notifications as notification, index (notification.id)}
 		<li>
 			<Notification {notification} onremove={(id) => {
-				notifications.splice(index, 1);
+				notifications = notifications.filter(n => n.id != id);
 			}} />
 		</li>
 	{:else}
