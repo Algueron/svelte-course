@@ -3,18 +3,27 @@
 	import {AlarmClock, Search, SearchCheck} from 'lucide-svelte';
 </script>
 
+<div class="wrapper">
+	<Button size="sm" shadow bgColor="green" textColor="yellow">
+		{#snippet left(isHovered: boolean)}
+			{#if isHovered}
+				<Search />
+			{:else}
+				<SearchCheck />
+			{/if}
+			
+		{/snippet}
+		Text
+		{#snippet right()}
+			<AlarmClock />
+		{/snippet}
+	</Button>
+</div>
 
-<Button size="sm" shadow bgColor="green" textColor="yellow">
-	{#snippet left(isHovered: boolean)}
-		{#if isHovered}
-			<Search />
-		{:else}
-			<SearchCheck />
-		{/if}
-		
-	{/snippet}
-	Text
-	{#snippet right()}
-		<AlarmClock />
-	{/snippet}
-</Button>
+<style>
+	:global {
+		body {
+			background-color: #222;
+		}
+	}
+</style>

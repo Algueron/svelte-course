@@ -82,6 +82,9 @@
         }
         .left-content {
             margin-inline-end: 10px;
+            :global(svg) {
+                stroke: red;
+            }
         }
         .right-content {
             margin-inline-start: 10px;
