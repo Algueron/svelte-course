@@ -14,7 +14,7 @@
     let {left, right, size = 'sm', shadow = false, children}: Props = $props();
 </script>
 
-<button class:sm={size == 'sm'} class:lg={size == 'lg'} class:shadow={shadow}>
+<button class={{sm: size === 'sm', lg: size === 'lg', shadow: shadow}}>
     {#if left}
         <div 
             class="left-content" 
