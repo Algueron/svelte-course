@@ -1,10 +1,17 @@
 <script lang="ts">
 	import Button from "$lib/components/Button.svelte";
 	import {AlarmClock, Search, SearchCheck} from 'lucide-svelte';
+
+	let button: Button;
+
+	$effect(() => {
+		console.log(button);
+	});
 </script>
 
 <div class="wrapper">
 	<Button 
+		bind:this={button}
 		size="sm" 
 		shadow 
 		--buttonBgColor="green" 

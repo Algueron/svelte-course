@@ -4,6 +4,8 @@
 
     let isLeftHovered = $state(false);
 
+    let button: HTMLButtonElement;
+
     type Props = HTMLButtonAttributes & {
         left?: Snippet<[boolean]>;
         right?: Snippet;
@@ -13,10 +15,27 @@
         onlefthover?: () => void
     }
 
-    let {left, right, size = 'sm', shadow = false, children, onlefthover, ...props}: Props = $props();
+    let {
+        left, 
+        right, 
+        size = 'sm', 
+        shadow = false, 
+        children, 
+        onlefthover, 
+        ...props
+    }: Props = $props();
+
+    export function focus() {
+        button.focus();
+    }
+
+    export function getButton() {
+        return button;
+    }
 </script>
 
 <button 
+    bind:this={button}
     class={
         {sm: size === 'sm', lg: size === 'lg', shadow: shadow}
     }
