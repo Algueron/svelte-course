@@ -1,48 +1,36 @@
 <script lang="ts">
-	import Button from "$lib/components/Button.svelte";
-	import {AlarmClock, Search, SearchCheck} from 'lucide-svelte';
+	import Notification from '$lib/components/Notification.svelte';
+	import generateNotifications from '$lib/utils/generate-notifications';
 
-	let button: Button;
-
-	$effect(() => {
-		console.log(button);
-	});
+	let notifications = $state(generateNotifications());
 </script>
 
-<div class="wrapper">
-	<Button 
-		bind:this={button}
-		href="https://svelte.dev"
-		size="sm" 
-		shadow 
-		--buttonBgColor="green" 
-		--buttonTextColor="yellow" 
-		onclick={() => {
-			alert(true);
-		}}
-		onlefthover={() => {
-			console.log('left hovered');
-		}}
-	>
-		{#snippet left(isHovered: boolean)}
-			{#if isHovered}
-				<Search />
-			{:else}
-				<SearchCheck />
-			{/if}
-			
-		{/snippet}
-		Text
-		{#snippet right()}
-			<AlarmClock />
-		{/snippet}
-	</Button>
-</div>
+<ul>
+	{#each notifications as notification, index}
+		<li>
+			<Notification {notification} onremove={(id) => {
+				notifications.splice(index, 1);
+			}} />
+		</li>
+	{:else}
+		<p>No notifications</p>
+	{/each}
+</ul>
 
 <style>
 	:global {
 		body {
 			background-color: #222;
+			color: white;
+		}
+	}
+
+	ul {
+		list-style: none;
+		padding: 10px;
+		margin: 0;
+		li {
+			margin-bottom: 10px;
 		}
 	}
 </style>
