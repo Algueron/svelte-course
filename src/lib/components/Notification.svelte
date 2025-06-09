@@ -14,8 +14,8 @@
         onremove?: (id: string) => void;
     } = $props();
 
-    const {id, title, body, date} = notification;
-    const dateObject = new Date(date);
+    const {id, title, body, date} = $derived(notification);
+    const dateObject = $derived(new Date(date));
 </script>
 
 <div class="notification">

@@ -2,11 +2,11 @@
 	import Notification from '$lib/components/Notification.svelte';
 	import generateNotifications from '$lib/utils/generate-notifications';
 
-	let notifications = $state(generateNotifications());
+	let notifications = $state(generateNotifications(5));
 </script>
 
 <ul>
-	{#each notifications as notification, index}
+	{#each notifications as notification, index (notification.id)}
 		<li>
 			<Notification {notification} onremove={(id) => {
 				notifications.splice(index, 1);
