@@ -4,7 +4,7 @@
 </script>
 
 
-<Button size="sm" shadow>
+<Button size="sm" shadow disabled>
 	{#snippet left(isHovered: boolean)}
 		{#if isHovered}
 			<Search />
