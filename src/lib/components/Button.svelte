@@ -10,12 +10,21 @@
         children: Snippet;
         size?: 'sm' | 'lg';
         shadow?: boolean;
+        bgColor?: string;
+        textColor?: string;
     }
 
-    let {left, right, size = 'sm', shadow = false, children, ...props}: Props = $props();
+    let {left, right, size = 'sm', shadow = false, children, bgColor, textColor, ...props}: Props = $props();
 </script>
 
-<button class={{sm: size === 'sm', lg: size === 'lg', shadow: shadow}} {...props}>
+<button 
+    class={
+        {sm: size === 'sm', lg: size === 'lg', shadow: shadow}
+    } 
+    style:--buttonBgColor={bgColor}
+    style:--buttonTextColor={textColor}
+    {...props}
+>
     {#if left}
         <div 
             class="left-content" 
@@ -41,8 +50,8 @@
 <style lang="scss">
     button {
         border: none;
-        background-color: #ff3e00;
-        color: #ffffff;
+        background-color: var(--buttonBgColor, #ff3e00);
+        color: var(--buttonTextColor, #ffffff);
         padding: 0 20px;
         height: 45px;
         font-weight: bold;
