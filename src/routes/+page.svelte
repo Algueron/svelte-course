@@ -4,7 +4,7 @@
 </script>
 
 <div class="wrapper">
-	<Button size="sm" shadow bgColor="green" textColor="yellow">
+	<Button size="sm" shadow --buttonBgColor="green" --buttonTextColor="yellow">
 		{#snippet left(isHovered: boolean)}
 			{#if isHovered}
 				<Search />

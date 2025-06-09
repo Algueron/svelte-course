@@ -10,19 +10,15 @@
         children: Snippet;
         size?: 'sm' | 'lg';
         shadow?: boolean;
-        bgColor?: string;
-        textColor?: string;
     }
 
-    let {left, right, size = 'sm', shadow = false, children, bgColor, textColor, ...props}: Props = $props();
+    let {left, right, size = 'sm', shadow = false, children, ...props}: Props = $props();
 </script>
 
 <button 
     class={
         {sm: size === 'sm', lg: size === 'lg', shadow: shadow}
-    } 
-    style:--buttonBgColor={bgColor}
-    style:--buttonTextColor={textColor}
+    }
     {...props}
 >
     {#if left}
