@@ -1,12 +1,12 @@
 <script lang="ts">
 	import type { Snippet } from "svelte";
-	import type { HTMLButtonAttributes } from "svelte/elements";
+	import type { HTMLAnchorAttributes, HTMLButtonAttributes } from "svelte/elements";
 
     let isLeftHovered = $state(false);
 
-    let button: HTMLButtonElement;
+    let button: HTMLButtonElement | HTMLAnchorElement;
 
-    type Props = HTMLButtonAttributes & {
+    type Props = ((HTMLButtonAttributes & { href?: never}) | (HTMLAnchorAttributes & { href: string})) & {
         left?: Snippet<[boolean]>;
         right?: Snippet;
         children: Snippet;
@@ -34,38 +34,42 @@
     }
 </script>
 
-<button 
+<svelte:element 
+    this={props.href ? 'a' : 'button'}
     bind:this={button}
-    class={
+    class={[
+        "button",
         {sm: size === 'sm', lg: size === 'lg', shadow: shadow}
-    }
+    ]}
     {...props}
 >
-    {#if left}
-        <div 
-            class="left-content" 
-            role="presentation"
-            onmouseenter={() => {
-                onlefthover?.()
-                isLeftHovered = true;
-            }}
-            onmouseleave={() => {
-                isLeftHovered = false;
-            }}
-        >
-            {@render left(isLeftHovered)}
-        </div>
-    {/if}
-    {@render children()}
-    {#if right}
-        <div class="right-content">
-            {@render right()}
-        </div>
-    {/if}
-</button>
+    <div class="flex">
+        {#if left}
+            <div 
+                class="left-content" 
+                role="presentation"
+                onmouseenter={() => {
+                    onlefthover?.()
+                    isLeftHovered = true;
+                }}
+                onmouseleave={() => {
+                    isLeftHovered = false;
+                }}
+            >
+                {@render left(isLeftHovered)}
+            </div>
+        {/if}
+        {@render children()}
+        {#if right}
+            <div class="right-content">
+                {@render right()}
+            </div>
+        {/if}
+    </div>
+</svelte:element>
 
 <style lang="scss">
-    button {
+    .button {
         border: none;
         background-color: var(--buttonBgColor, #ff3e00);
         color: var(--buttonTextColor, #ffffff);
@@ -74,9 +78,15 @@
         font-weight: bold;
         border-radius: 5px;
         cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        display: inline-block;
+        font-family: sans-serif;
+        text-decoration: none;
+        .flex {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+        }
         &:disabled {
             opacity: 0.6;
             cursor: not-allowed;

@@ -12,6 +12,7 @@
 <div class="wrapper">
 	<Button 
 		bind:this={button}
+		href="https://svelte.dev"
 		size="sm" 
 		shadow 
 		--buttonBgColor="green" 
