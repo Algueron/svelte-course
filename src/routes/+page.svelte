@@ -4,7 +4,18 @@
 </script>
 
 <div class="wrapper">
-	<Button size="sm" shadow --buttonBgColor="green" --buttonTextColor="yellow">
+	<Button 
+		size="sm" 
+		shadow 
+		--buttonBgColor="green" 
+		--buttonTextColor="yellow" 
+		onclick={() => {
+			alert(true);
+		}}
+		onlefthover={() => {
+			console.log('left hovered');
+		}}
+	>
 		{#snippet left(isHovered: boolean)}
 			{#if isHovered}
 				<Search />
