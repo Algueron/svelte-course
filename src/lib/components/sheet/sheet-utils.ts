@@ -1,3 +1,9 @@
+export type Cell = { 
+    value?: string;
+    bgColor?: string;
+    color?: string;
+}
+
 // Convert an Excel column name into it's index
 export function alphabetToNumber(letters: string) {
     return letters.split('').reduce((r, a) => r * 26 + parseInt(a, 36) - 9, 0);
