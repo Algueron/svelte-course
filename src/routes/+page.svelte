@@ -41,7 +41,7 @@
 	]);
 </script>
 
-<Sheet {data} />
+<Sheet bind:data />
 
 <style>
 	:global {
