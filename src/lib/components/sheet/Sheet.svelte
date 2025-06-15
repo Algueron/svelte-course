@@ -6,6 +6,11 @@
 
 	let editedCell: string | null = $state(null);
 	let selectedCell: string | null = $state(null);
+	let selectedCellObject = $derived.by(() => {
+		if (!selectedCell) return null;
+		const [row, col] = selectedCell.split(',');
+		return data[+row-1]?.[+col-1]
+	});
 
 	let numRows = $derived(data.length > 10 ? data.length : 10);
 
@@ -124,6 +129,32 @@
 		{/each}
 	</tbody>
 </table>
+
+{#if selectedCell}
+	<br/>
+	<label for="bgColor">Background</label>
+	<input 
+		type="color" 
+		id="bgColor" 
+		value={selectedCellObject?.bgColor || '#222222'}
+		oninput={(e) => {
+			if(!selectedCell) return;
+			const [row, col] = selectedCell?.split(',');
+			setCell(+row-1, +col-1, 'bgColor', e.currentTarget.value);
+		}}
+	/>
+	<label for="color">Font color</label>
+	<input 
+		type="color" 
+		id="color" 
+		value={selectedCellObject?.color || '#ffffff'}
+		oninput={(e) => {
+			if(!selectedCell) return;
+			const [row, col] = selectedCell?.split(',');
+			setCell(+row-1, +col-1, 'color', e.currentTarget.value);
+		}}
+	/>
+{/if}
 
 <style lang="scss">
 	.sheet {
