@@ -34,6 +34,36 @@
 			data[row][col] = {[prop]: value};
 		}
 	}
+
+	function parseValue(value: string | undefined): string | number {
+		if(!value) return '';
+		// e.g. =SUM(B2,C2)
+		if(value.startsWith('=')){
+			// extracts "SUM"
+			const funcName = value.split('(')[0].substring(1);
+			// extracts ['B2','C2']
+			const args = value.replace(`=${funcName}`, '').replace(/[()]/g, '').split(',');
+			const vals = args.map(arg => {
+				const cell = cellToIndex(arg);
+				const val = data[cell.row-1]?.[cell.col-1]?.value;
+				if(val?.startsWith('=')) {
+					return Number(parseValue(val));
+				}
+				return val ? Number(val) : 0;
+			});
+			return vals.reduce((prev, curr) => {
+				if(funcName === 'SUM') {
+					return prev + curr;
+				} 
+				if (funcName === 'MULTIPLY'	) {
+					return prev * curr;
+				}
+				return 0;
+			}, funcName === 'MULTIPLY' ? 1 : 0);
+		} else {
+			return value;
+		}
+	}
 </script>
 
 <table class="sheet">
@@ -69,7 +99,7 @@
 						{/if}
 						{#if row > 0 && column > 0}
 							{#if editedCell !== currentCell}
-								{cellData?.value || ''}
+								{parseValue(cellData?.value)}
 							{:else}
 								<input 
 									use:init
@@ -79,6 +109,11 @@
 									style:color={cellData?.color} 
 									oninput={(e) => {
 										setCell(row-1, column-1, 'value', e.currentTarget.value);
+									}}
+									onkeydown={(e) => {
+										if (e.key === 'Enter') {
+											editedCell = null;
+										}
 									}}
 								/>
 							{/if}
