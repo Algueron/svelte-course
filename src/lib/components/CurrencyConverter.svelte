@@ -1,54 +1,78 @@
 <script lang="ts">
-    let baseValue: number | undefined = $state(1);
-    let baseCurrency = $state('usd');
-    let baseRates: Record<string, number> = $state({});
-    let targetCurrency = $state('eur');
+    class CurrencyConverter {
+        baseValue: number | undefined = $state(1);
+        baseCurrency = $state('usd');
+        baseRates: Record<string, number> = $state({});
+        targetCurrency = $state('eur');
+        currencies = $state({});
+        loading = $state(true);
+        error: string | undefined = $state();
 
-    const currenciesPromise = fetch('https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies.json').then((r) => r.json());
+        constructor(baseValue: number, baseCurrency: string, targetCurrency: string) {
+            this.baseValue = baseValue;
+            this.baseCurrency = baseCurrency;
+            this.targetCurrency = targetCurrency;
+            this.#loadCurrencies();
+            $effect(() => {
+                this.#fetchRates();
+            })
+        }
 
-    let targetValue = {
-        get value() {
-            return calculateTarget();
-        },
-        set value(v) {
-            baseValue = calculateBase(v);
+        async #fetchRates() {
+            const res = await fetch(`https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/${this.baseCurrency}.json`);
+            const resJSON = await res.json();
+            this.baseRates = resJSON[this.baseCurrency];
+        }
+
+        async #loadCurrencies() {
+            this.loading = true;
+            this.error = undefined;
+            try {
+                const res = await fetch('https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies.json').then((r) => r.json());
+                this.currencies = res;
+            } catch {
+                this.error = 'An error has occured.';
+            }
+            this.loading = false;
+        }
+
+        #calculateTarget() {
+            return this.baseValue && this.baseRates[this.targetCurrency] && +(this.baseValue * this.baseRates[this.targetCurrency]).toFixed(3);
+        }
+
+        #calculateBase(targetValue?: number) {
+            return targetValue && this.baseRates[this.targetCurrency] && +(targetValue / this.baseRates[this.targetCurrency]).toFixed(3);
+        }
+
+        get targetValue () {
+            return this.#calculateTarget();
+        }
+        set targetValue(v) {
+            this.baseValue = this.#calculateBase(v);
         }
     }
-
-    async function fetchRates() {
-        const res = await fetch(`https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/${baseCurrency}.json`);
-        const resJSON = await res.json();
-        baseRates = resJSON[baseCurrency];
-    }
-
-    fetchRates();
-
-    function calculateTarget() {
-        return baseValue && baseRates[targetCurrency] && +(baseValue * baseRates[targetCurrency]).toFixed(3);
-    }
-
-    function calculateBase(targetValue?: number) {
-        return targetValue && baseRates[targetCurrency] && +(targetValue / baseRates[targetCurrency]).toFixed(3);
-    }
+    const cc = new CurrencyConverter(1, 'usd', 'eur');
 
 </script>
 
-{#await currenciesPromise}
+{#if cc.error}
+    <p>{cc.error}</p>
+{:else if cc.loading}
     <p>Loading...</p>
-{:then currencies}
+{:else}
     <div class="wrapper">
         <div class="conversion">
             <span class="base">
                 {Number(1).toLocaleString('en-US', {
                     style: 'currency',
-                    currency: baseCurrency,
+                    currency: cc.baseCurrency,
                     currencyDisplay: 'name'
                 })} equals
             </span>
             <span class="target">
-                {baseRates[targetCurrency]?.toLocaleString('en-US', {
+                {cc.baseRates[cc.targetCurrency]?.toLocaleString('en-US', {
                     style: 'currency',
-                    currency: targetCurrency,
+                    currency: cc.targetCurrency,
                     currencyDisplay: 'name'
                 })}
             </span>
@@ -57,35 +81,28 @@
         <div class="base">
             <input 
                 type='number' 
-                bind:value={baseValue}
+                bind:value={cc.baseValue}
             />
-            <select 
-                bind:value={baseCurrency}
-                onchange={() => {
-                    fetchRates();
-                }}
-            >
-                {#each Object.entries(currencies) as [key, value]}
-                    <option value={key}>{value}</option>
+            <select bind:value={cc.baseCurrency}>
+                {#each Object.entries(cc.currencies) as [key, value]}
+                    <option value={key}>{value || key}</option>
                 {/each}
             </select>
         </div>
         <div class="target">
             <input 
                 type='number' 
-                bind:value={targetValue.value}
+                bind:value={cc.targetValue}
             />
-            <select bind:value={targetCurrency}>
-                {#each Object.entries(currencies) as [key, value]}
-                    <option value={key}>{value}</option>
+            <select bind:value={cc.targetCurrency}>
+                {#each Object.entries(cc.currencies) as [key, value]}
+                    <option value={key}>{value || key}</option>
                 {/each}
             </select>
 
         </div>
     </div>
-{:catch error}
-    <p>Something went wrong.</p>
-{/await}
+{/if}
 
 <style lang="scss">
 	.wrapper {
