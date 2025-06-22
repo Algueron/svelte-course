@@ -1,21 +1,65 @@
 <script lang="ts">
     class CurrencyConverter {
-        baseValue: number | undefined = $state(1);
-        baseCurrency = $state('usd');
-        baseRates: Record<string, number> = $state({});
-        targetCurrency = $state('eur');
         currencies = $state({});
         loading = $state(true);
         error: string | undefined = $state();
 
+        #baseValue: number | undefined = $state(1);
+        get baseValue() {
+            return this.#baseValue;
+        }
+        set baseValue(v) {
+            if (v && v >= 0) {
+                this.#baseValue = v;
+            }
+            else {
+                this.#baseValue = 0;
+            }
+            this.#targetValue = this.#calculateTarget();
+        }
+
+        #baseCurrency = $state('usd');
+        get baseCurrency() {
+            return this.#baseCurrency;
+        }
+        set baseCurrency(v) {
+            this.#baseCurrency = v;
+            this.#fetchRates();
+        }
+
+        #targetValue: number | undefined = $state(0);
+        get targetValue () {
+            return this.#targetValue;
+        }
+        set targetValue(v) {
+            this.#targetValue = v;
+            this.#baseValue = this.#calculateBase();
+        }
+
+        #targetCurrency = $state('eur');
+        get targetCurrency() {
+            return this.#targetCurrency;
+        }
+        set targetCurrency(v) {
+            this.#targetCurrency = v;
+            this.#targetValue = this.#calculateTarget();
+        }
+
+        #baseRates: Record<string, number> = $state({});
+        get baseRates() {
+            return this.#baseRates;
+        }
+        set baseRates(v) {
+            this.#baseRates = v;
+            this.#targetValue = this.#calculateTarget();
+        }
+        
         constructor(baseValue: number, baseCurrency: string, targetCurrency: string) {
             this.baseValue = baseValue;
             this.baseCurrency = baseCurrency;
             this.targetCurrency = targetCurrency;
             this.#loadCurrencies();
-            $effect(() => {
-                this.#fetchRates();
-            })
+            this.#fetchRates();
         }
 
         async #fetchRates() {
@@ -40,15 +84,8 @@
             return this.baseValue && this.baseRates[this.targetCurrency] && +(this.baseValue * this.baseRates[this.targetCurrency]).toFixed(3);
         }
 
-        #calculateBase(targetValue?: number) {
-            return targetValue && this.baseRates[this.targetCurrency] && +(targetValue / this.baseRates[this.targetCurrency]).toFixed(3);
-        }
-
-        get targetValue () {
-            return this.#calculateTarget();
-        }
-        set targetValue(v) {
-            this.baseValue = this.#calculateBase(v);
+        #calculateBase() {
+            return this.#targetValue && this.baseRates[this.targetCurrency] && +(this.#targetValue / this.baseRates[this.targetCurrency]).toFixed(3);
         }
     }
     const cc = new CurrencyConverter(1, 'usd', 'eur');
