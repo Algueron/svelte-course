@@ -1,93 +1,6 @@
 <script lang="ts">
-    class CurrencyConverter {
-        currencies = $state({});
-        loading = $state(true);
-        error: string | undefined = $state();
-
-        #baseValue: number | undefined = $state(1);
-        get baseValue() {
-            return this.#baseValue;
-        }
-        set baseValue(v) {
-            if (v && v >= 0) {
-                this.#baseValue = v;
-            }
-            else {
-                this.#baseValue = 0;
-            }
-            this.#targetValue = this.#calculateTarget();
-        }
-
-        #baseCurrency = $state('usd');
-        get baseCurrency() {
-            return this.#baseCurrency;
-        }
-        set baseCurrency(v) {
-            this.#baseCurrency = v;
-            this.#fetchRates();
-        }
-
-        #targetValue: number | undefined = $state(0);
-        get targetValue () {
-            return this.#targetValue;
-        }
-        set targetValue(v) {
-            this.#targetValue = v;
-            this.#baseValue = this.#calculateBase();
-        }
-
-        #targetCurrency = $state('eur');
-        get targetCurrency() {
-            return this.#targetCurrency;
-        }
-        set targetCurrency(v) {
-            this.#targetCurrency = v;
-            this.#targetValue = this.#calculateTarget();
-        }
-
-        #baseRates: Record<string, number> = $state({});
-        get baseRates() {
-            return this.#baseRates;
-        }
-        set baseRates(v) {
-            this.#baseRates = v;
-            this.#targetValue = this.#calculateTarget();
-        }
-        
-        constructor(baseValue: number, baseCurrency: string, targetCurrency: string) {
-            this.baseValue = baseValue;
-            this.baseCurrency = baseCurrency;
-            this.targetCurrency = targetCurrency;
-            this.#loadCurrencies();
-            this.#fetchRates();
-        }
-
-        async #fetchRates() {
-            const res = await fetch(`https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/${this.baseCurrency}.json`);
-            const resJSON = await res.json();
-            this.baseRates = resJSON[this.baseCurrency];
-        }
-
-        async #loadCurrencies() {
-            this.loading = true;
-            this.error = undefined;
-            try {
-                const res = await fetch('https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies.json').then((r) => r.json());
-                this.currencies = res;
-            } catch {
-                this.error = 'An error has occured.';
-            }
-            this.loading = false;
-        }
-
-        #calculateTarget() {
-            return this.baseValue && this.baseRates[this.targetCurrency] && +(this.baseValue * this.baseRates[this.targetCurrency]).toFixed(3);
-        }
-
-        #calculateBase() {
-            return this.#targetValue && this.baseRates[this.targetCurrency] && +(this.#targetValue / this.baseRates[this.targetCurrency]).toFixed(3);
-        }
-    }
+    import CurrencyConverter from "$lib/utils/currency-converter.svelte";
+	import Button from "./Button.svelte";
     const cc = new CurrencyConverter(1, 'usd', 'eur');
 
 </script>
@@ -107,7 +20,7 @@
                 })} equals
             </span>
             <span class="target">
-                {cc.baseRates[cc.targetCurrency]?.toLocaleString('en-US', {
+                {cc.rate?.toLocaleString('en-US', {
                     style: 'currency',
                     currency: cc.targetCurrency,
                     currencyDisplay: 'name'
@@ -136,7 +49,18 @@
                     <option value={key}>{value || key}</option>
                 {/each}
             </select>
-
+        </div>
+        <div class="actions">
+            <Button
+                onclick={() => {
+                    cc.reset();
+                }}
+            >Reset</Button>
+            <Button
+                onclick={() => {
+                    cc.switch();
+                }}
+            >Switch</Button>
         </div>
     </div>
 {/if}
@@ -148,6 +72,14 @@
 		padding: 20px;
 		margin: 20px 10px;
 		border-radius: 10px;
+        .actions {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 30px;
+            :global(.button) {
+                margin-inline-start: 10px;
+            }
+        }
 		.conversion {
 			margin-bottom: 20px;
 			span.base {
