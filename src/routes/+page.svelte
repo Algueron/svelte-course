@@ -1,10 +1,10 @@
 <script lang="ts">
-	import CurrencyConverter from "$lib/components/CurrencyConverter.svelte";
-
-
+	import ClickToCount from '$lib/components/ClickToCount.svelte';
+	import DoubleClickToCount from '$lib/components/DoubleClickToCount.svelte';
 </script>
 
-<CurrencyConverter />
+<ClickToCount />
+<DoubleClickToCount />
 
 <style>
 	:global {
