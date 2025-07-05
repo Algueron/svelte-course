@@ -1,10 +1,18 @@
 <script lang="ts">
 	import ClickToCount from '$lib/components/ClickToCount.svelte';
-	import DoubleClickToCount from '$lib/components/DoubleClickToCount.svelte';
+	import Counters from '$lib/components/Counters.svelte';
 </script>
 
-<ClickToCount />
-<DoubleClickToCount />
+<Counters>
+	<ClickToCount />
+	<ClickToCount />
+</Counters>
+
+<Counters>
+	<ClickToCount />
+	<ClickToCount />
+</Counters>
+
 
 <style>
 	:global {

@@ -10,6 +10,4 @@ class Counter {
     }
 }
 
-const counter = new Counter();
-
-export default counter;
+export default Counter;
