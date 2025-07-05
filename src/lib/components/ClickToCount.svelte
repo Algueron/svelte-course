@@ -1,11 +1,9 @@
 <script lang="ts">
 	import { getContext, hasContext } from 'svelte';
 	import Button from './Button.svelte';
-	import Counter from '$lib/utils/counter.svelte';
+	import Counter, { getCounterContext, hasCounterContext } from '$lib/utils/counter.svelte';
 
-	const hasCountContext = hasContext('counter');
-
-	let counter = hasCountContext ? getContext<Counter>('counter') : new Counter();
+	let counter = hasCounterContext() ? getCounterContext() : new Counter();
 	
 </script>
 

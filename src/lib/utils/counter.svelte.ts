@@ -1,3 +1,5 @@
+import { getContext, hasContext, setContext } from "svelte";
+
 class Counter {
     value = $state(0);
 
@@ -9,5 +11,18 @@ class Counter {
         this.value = 0;
     }
 }
-
 export default Counter;
+
+const counterContextKey = Symbol('count');
+
+export function setCounterContext(counter: Counter) {
+    setContext(counterContextKey, counter);
+}
+
+export function getCounterContext() {
+    return getContext(counterContextKey) as Counter;
+}
+
+export function hasCounterContext() {
+    return hasContext(counterContextKey);
+}
