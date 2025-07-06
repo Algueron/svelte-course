@@ -10,7 +10,14 @@
     const layer = getLayerContext();
     const node = new Konva.Rect(props);
     layer.add(node);
+
     registerEvents(props, node);
+
+    Object.keys(props).filter(prop => !prop.startsWith('on')).forEach(prop => {
+        $effect(() => {
+            node.setAttr(prop, props[prop]);
+        })
+    });
 
     onDestroy(() => {
         node.destroy();
