@@ -4,7 +4,7 @@ import { getContext, setContext } from "svelte";
 const stageKey = Symbol('konva-stage');
 
 export function setStageContext(getStage: () => Konva.Stage) {
-    setContext(stageKey, getStage());
+    setContext(stageKey, getStage);
 }
 
 export function getStageContext() {
