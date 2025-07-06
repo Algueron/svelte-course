@@ -5,10 +5,11 @@
     import { type KonvaEventHooks, registerEvents } from './events';
 
 
-    let props: Konva.RectConfig & KonvaEventHooks = $props();
+    let {x = $bindable(), y = $bindable(), ...props}: Konva.RectConfig & KonvaEventHooks = $props();
 
     const layer = getLayerContext();
     const node = new Konva.Rect(props);
+
     layer.add(node);
 
     registerEvents(props, node);
@@ -19,7 +20,21 @@
         })
     });
 
+    $effect(() => {
+        node.setAttr('x', x);
+    });
+
+    $effect(() => {
+        node.setAttr('y', y);
+    });
+
+    node.on('dragend', (e) => {
+        x = e.currentTarget.attrs.x;
+        y = e.currentTarget.attrs.y;
+    });
+
     onDestroy(() => {
         node.destroy();
-    })
+    });
+
 </script>
