@@ -3,8 +3,27 @@
 </script>
 
 <Stage width={500} height={500}>
-	<Layer>
-		<Rect width={200} height={200} x={20} y={40} fill="purple" stroke="white" strokeWidth={4} draggable />
+	<Layer 
+		onclick={(e) => {
+			console.log(e);
+		}}
+	>
+		<Rect 
+			ondragend={(e) => {
+				console.log(e);
+			}}
+			ondblclick={() => {
+				alert(true);
+			}}
+			width={200} 
+			height={200} 
+			x={20} 
+			y={40} 
+			fill="purple" 
+			stroke="white" 
+			strokeWidth={4} 
+			draggable 
+		/>
 	</Layer>
 </Stage>
 

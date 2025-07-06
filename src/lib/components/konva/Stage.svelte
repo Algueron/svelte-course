@@ -2,8 +2,9 @@
     import Konva from 'konva';
 	import type { Snippet } from "svelte";
 	import { setStageContext } from './konva-context';
+    import { type KonvaEventHooks, registerEvents } from './events';
 
-    let {children, ...props}: {children?: Snippet} & Konva.StageConfig = $props();
+    let {children, ...props}: {children?: Snippet} & Konva.StageConfig & KonvaEventHooks = $props();
     let container: HTMLDivElement;
     let stage: Konva.Stage;
     let isReady = $state(false);
@@ -15,6 +16,7 @@
             container,
             ...props
         });
+        registerEvents(props, stage);
         isReady = true;
         // Needed to properly unmount our component
         return () => {
